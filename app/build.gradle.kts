@@ -28,6 +28,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -75,6 +76,15 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    implementation("androidx.compose.material:material-icons-extended:1.6.3")
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // TODO: there's a bug with some transition animations in the stable version
+    val navVersion = "2.8.0-alpha04"
+    implementation("androidx.navigation:navigation-compose:$navVersion")
+
 
     val koinVersion = "3.5.0"
     implementation("io.insert-koin:koin-android:$koinVersion")

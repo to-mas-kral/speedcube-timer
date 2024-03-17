@@ -28,15 +28,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.sp
+import com.tom.speedcubetimer.di.dataStore
 import com.tom.speedcubetimer.model.DURATION_HOLDING
 import com.tom.speedcubetimer.model.Timer
 import com.tom.speedcubetimer.model.TimerState
 import com.tom.speedcubetimer.model.toSpeedcubeTime
+import com.tom.speedcubetimer.persistence.TIMER_UPDATE_ENABLED
+import com.tom.speedcubetimer.persistence.settingsGetBoolean
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun TimeAndActions(
@@ -65,8 +70,7 @@ private fun TimerActions(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(alpha),
-        horizontalArrangement = Arrangement.Center
+            .alpha(alpha), horizontalArrangement = Arrangement.Center
     ) {
         IconButton(
             onClick = { viewModel.refreshScramble() },
@@ -146,6 +150,7 @@ private fun Time(timerState: Timer) {
     }
 }
 
+@Composable
 private fun formatTimerTime(timerState: Timer): String {
     return when (timerState.state()) {
         TimerState.Idle -> timerState.previousTime.toSpeedcubeTime()
@@ -155,8 +160,16 @@ private fun formatTimerTime(timerState: Timer): String {
             prevTime.replace(Regex("\\d"), "0")
         }
 
-        // TODO: based on some preferences...
-        //TimerState.Timing -> "..."
-        TimerState.Timing -> timerState.calculateCurrentTimingTime().toSpeedcubeTime()
+        TimerState.Timing -> {
+            val dataStore = LocalContext.current.dataStore
+            // TODO: probably don't wanna be blocking here ?
+            runBlocking {
+                if (settingsGetBoolean(dataStore, TIMER_UPDATE_ENABLED)) {
+                    timerState.calculateCurrentTimingTime().toSpeedcubeTime()
+                } else {
+                    "..."
+                }
+            }
+        }
     }
 }
