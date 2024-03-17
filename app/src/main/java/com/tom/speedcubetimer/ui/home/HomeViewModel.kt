@@ -3,9 +3,11 @@ package com.tom.speedcubetimer.ui.home
 import android.util.Log
 import com.tom.speedcubetimer.model.PuzzleScrambler
 import com.tom.speedcubetimer.model.PuzzleType
+import com.tom.speedcubetimer.model.TimeRecord
 import com.tom.speedcubetimer.model.Timer
 import com.tom.speedcubetimer.model.TimerState
 import com.tom.speedcubetimer.model.TimerTransition
+import com.tom.speedcubetimer.persistence.AppDatabase
 import com.tom.speedcubetimer.ui.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -18,14 +20,17 @@ import kotlinx.coroutines.runBlocking
 
 data class HomeUiState(
     val changePuzzleTypeDialogShown: Boolean = false,
-    val selectedPuzzleType: PuzzleType = PuzzleType._3,
+    val selectedPuzzleType: PuzzleType = PuzzleType.ThreeByThree,
     val scramble: String = "",
     val scrambleSvg: String? = null,
     val scramblerJob: Job = Job().let { it.complete(); it },
     val timerUpdateJob: Job = Job().let { it.complete(); it },
 )
 
-class HomeViewModel(private val puzzleScrambler: PuzzleScrambler) : BaseViewModel() {
+class HomeViewModel(
+    private val puzzleScrambler: PuzzleScrambler,
+    private val db: AppDatabase,
+) : BaseViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -79,6 +84,15 @@ class HomeViewModel(private val puzzleScrambler: PuzzleScrambler) : BaseViewMode
         }
     }
 
+    private fun saveTime() {
+        val time = timerState.value.previousTime
+        val record = TimeRecord(puzzleType = uiState.value.selectedPuzzleType, time = time)
+
+        launch {
+            db.timeRecordDao().insert(record)
+        }
+    }
+
     private fun stopTimerUpdate() {
         runBlocking {
             _uiState.value.timerUpdateJob.cancelAndJoin()
@@ -121,6 +135,10 @@ class HomeViewModel(private val puzzleScrambler: PuzzleScrambler) : BaseViewMode
 
         if (timerState.value.transition == TimerTransition.StartedHolding) {
             startTimerUpdate()
+        }
+
+        if (timerState.value.transition == TimerTransition.StoppedTiming) {
+            saveTime()
         }
     }
 

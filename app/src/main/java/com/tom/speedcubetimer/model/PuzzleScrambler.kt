@@ -17,17 +17,17 @@ val colorScheme = HashMap<String, svgliteColor>()
 class PuzzleScrambler {
     fun makeScramble(puzzleType: PuzzleType): Scramble {
         val scramble = when (puzzleType) {
-            PuzzleType._2 -> _2.generateScramble()
-            PuzzleType._3 -> _3.generateScramble()
-            PuzzleType._4 -> _4.generateScramble()
-            PuzzleType._5 -> _5.generateScramble()
+            PuzzleType.TwoByTwo -> _2.generateScramble()
+            PuzzleType.ThreeByThree -> _3.generateScramble()
+            PuzzleType.FourByFour -> _4.generateScramble()
+            PuzzleType.FiveByFive -> _5.generateScramble()
         }
 
         val image = when (puzzleType) {
-            PuzzleType._2 -> _2.drawScramble(scramble, colorScheme).toString()
-            PuzzleType._3 -> _3.drawScramble(scramble, colorScheme).toString()
-            PuzzleType._4 -> _4.drawScramble(scramble, colorScheme).toString()
-            PuzzleType._5 -> _5.drawScramble(scramble, colorScheme).toString()
+            PuzzleType.TwoByTwo -> _2.drawScramble(scramble, colorScheme).toString()
+            PuzzleType.ThreeByThree -> _3.drawScramble(scramble, colorScheme).toString()
+            PuzzleType.FourByFour -> _4.drawScramble(scramble, colorScheme).toString()
+            PuzzleType.FiveByFive -> _5.drawScramble(scramble, colorScheme).toString()
         }
 
         return Scramble(scramble, image)

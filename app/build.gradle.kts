@@ -2,12 +2,12 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.devtools.ksp")
 }
 
 android {
     signingConfigs {
-        create("release") {
-        }
+        create("release") {}
     }
     namespace = "com.tom.speedcubetimer"
     compileSdk = 34
@@ -30,8 +30,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
         }
@@ -47,12 +46,16 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+
+    ksp {
+        arg("room.generateKotlin", "true")
     }
 }
 
@@ -66,6 +69,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
+    ksp("androidx.room:room-compiler:2.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
