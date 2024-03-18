@@ -51,6 +51,7 @@ import androidx.navigation.compose.rememberNavController
 import com.tom.speedcubetimer.model.PuzzleType
 import com.tom.speedcubetimer.model.Timer
 import com.tom.speedcubetimer.ui.settings.Settings
+import com.tom.speedcubetimer.ui.solves.SolvesAndStats
 import org.koin.androidx.compose.getViewModel
 
 const val TIMER_NAV_DEST: String = "timer"
@@ -140,7 +141,9 @@ fun HomeScreenInner(
                     onRefreshScrambleClick
                 )
             }
-            composable(SOLVES_NAV_DEST) {}
+            composable(SOLVES_NAV_DEST) {
+                SolvesAndStats(innerPadding, uiState.selectedPuzzleType)
+            }
             composable(SETTINGS_NAV_DEST) {
                 Settings(innerPadding)
             }

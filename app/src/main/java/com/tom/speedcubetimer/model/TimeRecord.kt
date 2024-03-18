@@ -18,12 +18,24 @@ class Converters {
     fun longToDuration(value: Long): Duration {
         return value.milliseconds
     }
+
+    @TypeConverter
+    fun toPuzzleType(value: Int) = enumValues<PuzzleType>()[value]
+
+    @TypeConverter
+    fun fromPuzzleType(value: PuzzleType) = value.ordinal
 }
 
 @Entity(tableName = "time_records")
 @TypeConverters(Converters::class)
 class TimeRecord(
     @PrimaryKey(autoGenerate = true) val uid: Int = 0,
-    @ColumnInfo(name = "puzzle_type") val puzzleType: PuzzleType,
-    @ColumnInfo(name = "time") val time: Duration
+
+    @ColumnInfo(name = "puzzle_type")
+    @TypeConverters(Converters::class)
+    val puzzleType: PuzzleType,
+
+    @ColumnInfo(name = "time")
+    @TypeConverters(Converters::class)
+    val time: Duration
 )

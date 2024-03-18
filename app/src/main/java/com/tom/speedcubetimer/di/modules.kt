@@ -10,6 +10,7 @@ import com.tom.speedcubetimer.model.PuzzleScrambler
 import com.tom.speedcubetimer.persistence.AppDatabase
 import com.tom.speedcubetimer.ui.home.HomeViewModel
 import com.tom.speedcubetimer.ui.settings.SettingsViewModel
+import com.tom.speedcubetimer.ui.solves.SolvesViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -39,6 +40,7 @@ val homeScreenModule = module {
 }
 
 val uiModule = module {
-    this.viewModel { HomeViewModel(get<PuzzleScrambler>(), get()) }
+    this.viewModel { HomeViewModel(get<PuzzleScrambler>(), get<AppDatabase>().timeRecordDao()) }
     this.viewModel { SettingsViewModel(androidContext().dataStore) }
+    this.viewModel { SolvesViewModel(get<AppDatabase>().timeRecordDao()) }
 }

@@ -3,6 +3,7 @@ package com.tom.speedcubetimer.ui.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -101,11 +102,15 @@ private fun ScrambleText(
         visible = timerState.isIdle(),
         enter = fadeIn(),
         exit = fadeOut(),
-        modifier = Modifier.wrapContentHeight()
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
     ) {
         Row(
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .padding(start = 8.dp, end = 8.dp)
+                .fillMaxWidth()
                 .layoutId(SCRAMBLE_TEXT_ID)
         ) {
             if (uiState.scramblerJob.isActive) {

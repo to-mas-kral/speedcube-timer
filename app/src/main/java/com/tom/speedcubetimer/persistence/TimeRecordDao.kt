@@ -6,11 +6,12 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.tom.speedcubetimer.model.TimeRecord
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TimeRecordDao {
-    @Query("SELECT * FROM time_records")
-    abstract fun getAll(): List<TimeRecord>
+    @Query("SELECT * FROM time_records ORDER BY uid DESC")
+    fun getAll(): Flow<List<TimeRecord>>
 
     @Insert
     fun insert(obj: TimeRecord)
