@@ -17,12 +17,12 @@ import com.tom.speedcubetimer.model.PuzzleType
 
 @Composable
 fun ChangePuzzleTypeDialog(
-    viewModel: HomeViewModel, uiState: HomeUiState
+    selectedPuzzleType: PuzzleType,
+    onPuzzleTypeSelected: (PuzzleType) -> Unit,
+    onDismissRequest: () -> Unit
 ) {
     Dialog(
-        onDismissRequest = {
-            viewModel.togglePuzzleTypeDialogShown()
-        },
+        onDismissRequest = onDismissRequest
     ) {
         Card(
             modifier = Modifier
@@ -33,11 +33,8 @@ fun ChangePuzzleTypeDialog(
             Column {
                 PuzzleType.entries.forEach { puzzleType ->
                     SingleRadioButton(
-                        puzzleType, uiState.selectedPuzzleType
-                    ) { newPuzzleType ->
-                        viewModel.changePuzzleType(newPuzzleType)
-                        viewModel.togglePuzzleTypeDialogShown()
-                    }
+                        puzzleType, selectedPuzzleType, onPuzzleTypeSelected = onPuzzleTypeSelected,
+                    )
                 }
             }
         }

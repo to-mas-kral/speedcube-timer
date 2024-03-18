@@ -36,8 +36,13 @@ import com.tom.speedcubetimer.model.Timer
 import java.nio.ByteBuffer
 
 @Composable
-fun Timer(
-    viewModel: HomeViewModel, innerPadding: PaddingValues, uiState: HomeUiState, timerState: Timer
+fun TimerView(
+    innerPadding: PaddingValues,
+    uiState: HomeUiState,
+    timerState: Timer,
+    onTimerPressed: () -> Unit,
+    onTimerReleased: () -> Unit,
+    onRefreshScrambleClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -47,31 +52,32 @@ fun Timer(
                 bottom = innerPadding.calculateBottomPadding(),
             )
             .pointerInput(null) {
-                handleTimerInput(viewModel)
+                handleTimerInput(onTimerPressed, onTimerReleased)
             },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TimerInner(viewModel, uiState, timerState)
+        TimerInner(uiState, timerState, onRefreshScrambleClick)
     }
 }
 
 @Composable
 private fun TimerInner(
-    viewModel: HomeViewModel, uiState: HomeUiState, timerState: Timer
+    uiState: HomeUiState, timerState: Timer, onRefreshScrambleClick: () -> Unit
 ) {
     ConstraintLayout(
         layoutConstraints(), modifier = Modifier.fillMaxSize()
     ) {
         ScrambleText(uiState, timerState)
 
-        TimeAndActions(viewModel, timerState, uiState)
+        TimeAndActions(timerState, uiState, onRefreshScrambleClick)
 
         ScrambleImage(uiState, timerState)
     }
 }
 
 private suspend fun PointerInputScope.handleTimerInput(
-    viewModel: HomeViewModel
+    onTimerPressed: () -> Unit,
+    onTimerReleased: () -> Unit,
 ) {
     awaitPointerEventScope {
         while (true) {
@@ -79,8 +85,8 @@ private suspend fun PointerInputScope.handleTimerInput(
 
             if (event.changes.any { !it.isConsumed }) {
                 when (event.type) {
-                    PointerEventType.Press -> viewModel.timerPressed()
-                    PointerEventType.Release -> viewModel.timerReleased()
+                    PointerEventType.Press -> onTimerPressed()
+                    PointerEventType.Release -> onTimerReleased()
                 }
             }
         }

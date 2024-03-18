@@ -13,11 +13,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.getViewModel
@@ -27,7 +28,19 @@ fun Settings(
     innerPadding: PaddingValues,
     viewModel: SettingsViewModel = getViewModel(),
 ) {
-    val state = viewModel.timerUpdateEnabled.collectAsState()
+    val settingsState by viewModel.timerUpdateEnabled.collectAsState()
+    SettingsInner(innerPadding, settingsState, onTimerUpdateEnabledSwitched = { newValue ->
+        viewModel.onTimerUpdateEnabledSwitched(newValue)
+    })
+}
+
+@Preview
+@Composable
+fun SettingsInner(
+    innerPadding: PaddingValues = PaddingValues(0.dp),
+    settingsState: Boolean = false,
+    onTimerUpdateEnabledSwitched: (Boolean) -> Unit = {},
+) {
 
     // TODO: need to repeat this column with innerPadding because I can't put it directly in navhost...
     Column(
@@ -39,19 +52,18 @@ fun Settings(
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        SettingsInner(viewModel, state)
+        SettingsContainer(settingsState, onTimerUpdateEnabledSwitched)
     }
 }
 
 @Composable
-fun SettingsInner(viewModel: SettingsViewModel, state: State<Boolean>) {
+fun SettingsContainer(state: Boolean, onTimerUpdateEnabledSwitched: (Boolean) -> Unit) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         BooleanSwitch(
             text = "Timer updates while solving",
-            checked = state.value,
-            onChange = { newValue ->
-                viewModel.onTimerUpdateEnabledSwitched(newValue)
-            })
+            checked = state,
+            onChange = onTimerUpdateEnabledSwitched
+        )
 
         //Divider()
     }

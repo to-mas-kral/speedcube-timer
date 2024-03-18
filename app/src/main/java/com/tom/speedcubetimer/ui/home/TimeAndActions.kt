@@ -45,20 +45,20 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun TimeAndActions(
-    viewModel: HomeViewModel, timerState: Timer, uiState: HomeUiState
+    timerState: Timer, uiState: HomeUiState, onRefreshScrambleClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.layoutId(TIME_AND_ACTIONS_ID)
     ) {
         Time(timerState)
 
-        TimerActions(uiState, timerState, viewModel)
+        TimerActions(uiState, timerState, onRefreshScrambleClick)
     }
 }
 
 @Composable
 private fun TimerActions(
-    uiState: HomeUiState, timerState: Timer, viewModel: HomeViewModel
+    uiState: HomeUiState, timerState: Timer, onRefreshScrambleClick: () -> Unit
 ) {
     val isVisible = !uiState.scramblerJob.isActive && timerState.isIdle()
     val alpha by animateFloatAsState(
@@ -73,7 +73,7 @@ private fun TimerActions(
             .alpha(alpha), horizontalArrangement = Arrangement.Center
     ) {
         IconButton(
-            onClick = { viewModel.refreshScramble() },
+            onClick = onRefreshScrambleClick,
             enabled = isVisible,
             modifier = consumePointerEvents
         ) {

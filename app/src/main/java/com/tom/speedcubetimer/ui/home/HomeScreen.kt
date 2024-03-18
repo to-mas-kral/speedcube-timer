@@ -42,11 +42,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tom.speedcubetimer.model.PuzzleType
 import com.tom.speedcubetimer.model.Timer
 import com.tom.speedcubetimer.ui.settings.Settings
 import org.koin.androidx.compose.getViewModel
@@ -61,17 +63,59 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val timerState by viewModel.timerState.collectAsState()
+
+    HomeScreenInner(
+        uiState, timerState,
+        onPuzzleTypeSelected = { newPuzzleType ->
+            viewModel.changePuzzleType(newPuzzleType)
+            viewModel.togglePuzzleTypeDialogShown()
+
+        },
+        onPuzzleTypeChangeDialogDismissRequest = {
+            viewModel.togglePuzzleTypeDialogShown()
+        },
+        onPuzzleTypeButtonClick = {
+            viewModel.togglePuzzleTypeDialogShown()
+        },
+        onTimerPressed = {
+            viewModel.timerPressed()
+        },
+        onTimerReleased = {
+            viewModel.timerReleased()
+        },
+        onRefreshScrambleClick = {
+            viewModel.refreshScramble()
+        }
+    )
+}
+
+@Preview
+@Composable
+fun HomeScreenInner(
+    // TODO: passing lambdas instead of the viewModel is a pattern I found online
+    //       having to default initialize all args doesn't feel good, but hey, at least the preview works...
+    uiState: HomeUiState = HomeUiState(),
+    timerState: Timer = Timer.Idle(),
+    onPuzzleTypeSelected: (PuzzleType) -> Unit = {},
+    onPuzzleTypeChangeDialogDismissRequest: () -> Unit = {},
+    onPuzzleTypeButtonClick: () -> Unit = {},
+    onTimerPressed: () -> Unit = {},
+    onTimerReleased: () -> Unit = {},
+    onRefreshScrambleClick: () -> Unit = {},
+) {
     val navController = rememberNavController()
 
     if (uiState.changePuzzleTypeDialogShown) {
-        ChangePuzzleTypeDialog(viewModel, uiState)
+        ChangePuzzleTypeDialog(
+            uiState.selectedPuzzleType, onPuzzleTypeSelected, onPuzzleTypeChangeDialogDismissRequest
+        )
     }
 
     // TODO: The timer needs to hide the topBar and bottomBar, didn't
     //       know how to move the scaffold and navhost upwards...
     Scaffold(topBar = {
         AnimateSlideTop(visible = isVisibleRest(timerState)) {
-            TopBar(viewModel, uiState)
+            TopBar(uiState, onPuzzleTypeButtonClick)
         }
     }, bottomBar = {
         AnimateSlideBottom(visible = isVisibleRest(timerState)) {
@@ -87,8 +131,13 @@ fun HomeScreen(
             popExitTransition = { fadeOut(tween(200)) },
         ) {
             composable(TIMER_NAV_DEST) {
-                Timer(
-                    viewModel, innerPadding, uiState, timerState
+                TimerView(
+                    innerPadding,
+                    uiState,
+                    timerState,
+                    onTimerPressed,
+                    onTimerReleased,
+                    onRefreshScrambleClick
                 )
             }
             composable(SOLVES_NAV_DEST) {}
@@ -104,7 +153,7 @@ private const val barsSize = 0.075f
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TopBar(
-    viewModel: HomeViewModel, uiState: HomeUiState
+    uiState: HomeUiState, onPuzzleTypeButtonClick: () -> Unit
 ) {
     // TODO: Round corners only on bottom of card ?
     ElevatedCard(
@@ -122,7 +171,7 @@ private fun TopBar(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxHeight()
             ) {
-                Button(onClick = { viewModel.togglePuzzleTypeDialogShown() }) {
+                Button(onClick = onPuzzleTypeButtonClick) {
                     Text(text = uiState.selectedPuzzleType.toString())
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
