@@ -45,20 +45,26 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun TimeAndActions(
-    timerState: Timer, uiState: HomeUiState, onRefreshScrambleClick: () -> Unit
+    timerState: Timer,
+    uiState: HomeUiState,
+    onRefreshScrambleClick: () -> Unit,
+    onDeleteLastSolveClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.layoutId(TIME_AND_ACTIONS_ID)
     ) {
         Time(timerState)
 
-        TimerActions(uiState, timerState, onRefreshScrambleClick)
+        TimerActions(uiState, timerState, onRefreshScrambleClick, onDeleteLastSolveClick)
     }
 }
 
 @Composable
 private fun TimerActions(
-    uiState: HomeUiState, timerState: Timer, onRefreshScrambleClick: () -> Unit
+    uiState: HomeUiState,
+    timerState: Timer,
+    onRefreshScrambleClick: () -> Unit,
+    onDeleteLastSolveClick: () -> Unit
 ) {
     val isVisible = !uiState.scramblerJob.isActive && timerState.isIdle()
     val alpha by animateFloatAsState(
@@ -70,7 +76,8 @@ private fun TimerActions(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(alpha), horizontalArrangement = Arrangement.Center
+            .alpha(alpha),
+        horizontalArrangement = Arrangement.Center
     ) {
         IconButton(
             onClick = onRefreshScrambleClick,
@@ -84,7 +91,9 @@ private fun TimerActions(
         }
 
         IconButton(
-            onClick = {/*TODO*/ }, enabled = isVisible, modifier = consumePointerEvents
+            onClick = onDeleteLastSolveClick,
+            enabled = isVisible,
+            modifier = consumePointerEvents
         ) {
             Icon(
                 imageVector = Icons.Filled.Clear, contentDescription = "Delete last time"

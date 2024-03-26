@@ -86,6 +86,9 @@ fun HomeScreen(
         },
         onRefreshScrambleClick = {
             viewModel.refreshScramble()
+        },
+        onDeleteLastSolveClick = {
+            viewModel.deleteLastSolve()
         }
     )
 }
@@ -103,12 +106,15 @@ fun HomeScreenInner(
     onTimerPressed: () -> Unit = {},
     onTimerReleased: () -> Unit = {},
     onRefreshScrambleClick: () -> Unit = {},
+    onDeleteLastSolveClick: () -> Unit = {},
 ) {
     val navController = rememberNavController()
 
     if (uiState.changePuzzleTypeDialogShown) {
         ChangePuzzleTypeDialog(
-            uiState.selectedPuzzleType, onPuzzleTypeSelected, onPuzzleTypeChangeDialogDismissRequest
+            uiState.selectedPuzzleType,
+            onPuzzleTypeSelected,
+            onPuzzleTypeChangeDialogDismissRequest
         )
     }
 
@@ -138,7 +144,8 @@ fun HomeScreenInner(
                     timerState,
                     onTimerPressed,
                     onTimerReleased,
-                    onRefreshScrambleClick
+                    onRefreshScrambleClick,
+                    onDeleteLastSolveClick
                 )
             }
             composable(SOLVES_NAV_DEST) {

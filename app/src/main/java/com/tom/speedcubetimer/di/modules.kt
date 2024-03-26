@@ -52,7 +52,7 @@ val homeScreenModule = module {
 val uiModule = module {
     this.viewModel {
         HomeViewModel(
-            get<PuzzleScrambler>(), get<AppDatabase>().timeRecordDao()
+            get<PuzzleScrambler>(), get<SolvesRepository>()
         )
     }
     this.viewModel { SettingsViewModel(androidContext().dataStore) }

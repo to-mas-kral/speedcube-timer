@@ -8,7 +8,7 @@ import com.tom.speedcubetimer.model.TimeRecord
 import com.tom.speedcubetimer.model.Timer
 import com.tom.speedcubetimer.model.TimerState
 import com.tom.speedcubetimer.model.TimerTransition
-import com.tom.speedcubetimer.persistence.solves.TimeRecordDao
+import com.tom.speedcubetimer.persistence.solves.SolvesRepository
 import com.tom.speedcubetimer.ui.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -31,7 +31,7 @@ data class HomeUiState(
 
 class HomeViewModel(
     private val puzzleScrambler: PuzzleScrambler,
-    private val timeRecordDao: TimeRecordDao,
+    private val solvesRepository: SolvesRepository,
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -90,11 +90,10 @@ class HomeViewModel(
 
     private fun saveTime() {
         val time = timerState.value.previousTime
-        val record = TimeRecord(puzzleType = uiState.value.selectedPuzzleType, time = time)
+        val record =
+            TimeRecord(puzzleType = uiState.value.selectedPuzzleType, time = time)
 
-        launch {
-            timeRecordDao.insert(record)
-        }
+        solvesRepository.insert(record)
     }
 
     private fun stopTimerUpdate() {
@@ -165,5 +164,10 @@ class HomeViewModel(
 
             else -> {}
         }
+    }
+
+    // TODO: better UX... only enable this functionality a few seconds after the last solve
+    fun deleteLastSolve() {
+        solvesRepository.deleteLast(uiState.value.selectedPuzzleType)
     }
 }

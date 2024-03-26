@@ -44,6 +44,7 @@ fun TimerView(
     onTimerPressed: () -> Unit,
     onTimerReleased: () -> Unit,
     onRefreshScrambleClick: () -> Unit,
+    onDeleteLastSolveClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -57,20 +58,28 @@ fun TimerView(
             },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TimerInner(uiState, timerState, onRefreshScrambleClick)
+        TimerInner(uiState, timerState, onRefreshScrambleClick, onDeleteLastSolveClick)
     }
 }
 
 @Composable
 private fun TimerInner(
-    uiState: HomeUiState, timerState: Timer, onRefreshScrambleClick: () -> Unit
+    uiState: HomeUiState,
+    timerState: Timer,
+    onRefreshScrambleClick: () -> Unit,
+    onDeleteLastSolveClick: () -> Unit
 ) {
     ConstraintLayout(
         layoutConstraints(), modifier = Modifier.fillMaxSize()
     ) {
         ScrambleText(uiState, timerState)
 
-        TimeAndActions(timerState, uiState, onRefreshScrambleClick)
+        TimeAndActions(
+            timerState,
+            uiState,
+            onRefreshScrambleClick,
+            onDeleteLastSolveClick
+        )
 
         ScrambleImage(uiState, timerState)
     }
