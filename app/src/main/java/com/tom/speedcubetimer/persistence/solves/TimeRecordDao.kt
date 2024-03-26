@@ -1,4 +1,4 @@
-package com.tom.speedcubetimer.persistence
+package com.tom.speedcubetimer.persistence.solves
 
 import androidx.room.Dao
 import androidx.room.Delete

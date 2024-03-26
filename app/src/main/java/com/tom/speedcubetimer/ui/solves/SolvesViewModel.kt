@@ -1,7 +1,7 @@
 package com.tom.speedcubetimer.ui.solves
 
 import com.tom.speedcubetimer.model.TimeRecord
-import com.tom.speedcubetimer.persistence.TimeRecordDao
+import com.tom.speedcubetimer.persistence.solves.SolvesRepository
 import com.tom.speedcubetimer.ui.base.BaseViewModel
 
 data class SolvesDetail(
@@ -9,8 +9,8 @@ data class SolvesDetail(
 )
 
 class SolvesViewModel(
-    private val timeRecordDao: TimeRecordDao,
+    solvesRepository: SolvesRepository,
 ) : BaseViewModel() {
-    // TODO: this is really only proof-of-concept
-    val solvesState = timeRecordDao.getAll()
+    val solves = solvesRepository.solves
+    val solveStats = solvesRepository.solveStats
 }

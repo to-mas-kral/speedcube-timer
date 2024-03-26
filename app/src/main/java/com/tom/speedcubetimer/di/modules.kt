@@ -8,6 +8,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.tom.speedcubetimer.model.PuzzleScrambler
 import com.tom.speedcubetimer.persistence.AppDatabase
+import com.tom.speedcubetimer.persistence.solves.SolvesRepository
+import com.tom.speedcubetimer.persistence.solves.TimeRecordDao
 import com.tom.speedcubetimer.ui.home.HomeViewModel
 import com.tom.speedcubetimer.ui.settings.SettingsViewModel
 import com.tom.speedcubetimer.ui.solves.SolvesViewModel
@@ -29,18 +31,30 @@ val persistenceModule = module {
             androidApplication(), AppDatabase::class.java, "speedcube-timer-database"
         ).build()
     }
+
+    single {
+        get<AppDatabase>().timeRecordDao()
+    }
+
+    single {
+        SolvesRepository(get<TimeRecordDao>())
+    }
 }
 
 val homeScreenModule = module {
     single {
         // Upstream issue: https://github.com/thewca/tnoodle-lib/issues/13
-        Log.w("Koin", "This is an upstream with the WCA tnoodle library")
+        Log.w("Koin", "This is an upstream issue with the WCA tnoodle library")
         PuzzleScrambler()
     }
 }
 
 val uiModule = module {
-    this.viewModel { HomeViewModel(get<PuzzleScrambler>(), get<AppDatabase>().timeRecordDao()) }
+    this.viewModel {
+        HomeViewModel(
+            get<PuzzleScrambler>(), get<AppDatabase>().timeRecordDao()
+        )
+    }
     this.viewModel { SettingsViewModel(androidContext().dataStore) }
-    this.viewModel { SolvesViewModel(get<AppDatabase>().timeRecordDao()) }
+    this.viewModel { SolvesViewModel(get<SolvesRepository>()) }
 }

@@ -26,6 +26,8 @@ class Converters {
     fun fromPuzzleType(value: PuzzleType) = value.ordinal
 }
 
+// TODO: it would have been better to create a separate table for every puzzleType...
+
 @Entity(tableName = "time_records")
 @TypeConverters(Converters::class)
 class TimeRecord(

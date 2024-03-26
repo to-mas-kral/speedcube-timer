@@ -8,7 +8,7 @@ import com.tom.speedcubetimer.model.TimeRecord
 import com.tom.speedcubetimer.model.Timer
 import com.tom.speedcubetimer.model.TimerState
 import com.tom.speedcubetimer.model.TimerTransition
-import com.tom.speedcubetimer.persistence.TimeRecordDao
+import com.tom.speedcubetimer.persistence.solves.TimeRecordDao
 import com.tom.speedcubetimer.ui.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
